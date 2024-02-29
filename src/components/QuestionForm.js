@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function QuestionForm(props) {
+function QuestionForm({ questions, setQuestions }) {
   const [formData, setFormData] = useState({
     prompt: "",
     answer1: "",
@@ -10,17 +10,35 @@ function QuestionForm(props) {
     correctIndex: 0,
   });
 
+  
+  
   function handleChange(event) {
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
     });
-  }
-
+  } // spreading the existing formData object using the spread operator (...formData), and then updating a specific property of the object using computed property names. this function is updating the form data state by adding or updating a specific property based on the input field's name attribute and the value entered in the input field.
+  
   function handleSubmit(event) {
     event.preventDefault();
     console.log(formData);
-  }
+
+    fetch("http://localhost:4000/questions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",    
+      },
+      body: JSON.stringify({
+        prompt: formData.prompt,
+        answers: [formData.answer1,formData.answer2,formData.answer3,formData.answer4],
+        correctIndex: formData.correctIndex,
+      })
+    })
+      .then(response=>response.json())
+      .then(data=>{
+        console.log(data)
+        setQuestions([...questions, data])
+      })}
 
   return (
     <section>
